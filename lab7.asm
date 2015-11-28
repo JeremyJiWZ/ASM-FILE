@@ -29,9 +29,11 @@ waitadc:
 	in al,dx
 	mov adcdata[bx],al ;存于缓冲区
 wait100ms:
+	call setcalculator
+waiting:	
 	call getpb  ;调用函数，B端口数据给到AL,检测第六位，计数结束为高
 	test al,40h
-	jz wait100ms ;继续等待直到100ms
+	jz waiting ;继续等待直到100ms
 
 	;等待时间到，继续读数据
 	inc bx
@@ -92,7 +94,7 @@ getpb proc
 	ret
 getpb endp
 
-setcaculator proc
+setcalculator proc
 	;设置计数器0，计时100ms后PB6为高
 	mov dx,0de23h ;caculator 0
     mov al,30h ;方式1，先读写低8位，再读写高8位
@@ -106,7 +108,7 @@ setcaculator proc
     mov al,0ch; 3125 = 0xC35
     out dx,al
     ret
-setcaculator endp
+setcalculator endp
 
 code ends
 end start
