@@ -24,7 +24,7 @@ start:
 
 	;清除中断
 	mov dx,0de03h;C端口,复位方式
-	mov al,00000000b
+	mov al,00000100b
 	out dx,al
 
 	;输出提示信息
@@ -61,15 +61,14 @@ start:
 	;开始中断计数
 	sti ;允许终端产生
 	mov ax,data
-	mov ds,axo9
+	mov ds,ax
 loop1:
 	cmp flag_itr,1
 	jne loop1
 	mov flag_itr,0
 	mov al,switch_data
 	call show_data
-	mov cx,int_time
-	cmp cx,10
+	cmp int_time,10
 	jne loop1
 
 	;结束程序

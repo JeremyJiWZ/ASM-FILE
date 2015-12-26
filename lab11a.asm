@@ -79,25 +79,29 @@ loop1:
 	inc bl
 	mov cl,bl
 	and cl,0fh
-	cmp cl,09h;是否进位
+	cmp cl,0ah;是否进位
 	jne restore_time
 	add bl,10h;十为进一
 	and bl,0f0h;个位清零
-	cmp min,60h;是否进位
+	cmp bl,60h;是否进位
 	jne restore_time
 	inc bh ;小时加一
 	mov bl,0;分钟清零
 	mov cl,bh
 	and cl,0fh
-	cmp cl,9h;是否进位
+	cmp cl,0ah;是否进位
 	jne restore_time
 	add bh,10h;十位进一
 	and bh,0f0h;个位清零
-	cmp bh,24h;是否24h进位
-	jne restore_time
-	mov bh,0
+	;cmp bh,24h;是否24h进位
+	;jne restore_time
+	;mov bh,0
 
 restore_time:
+	cmp bh,24h;是否24h进位
+	jne store_time
+	mov bh,0
+store_time:
 	mov min,bl
 	mov hour,bh
 display_time:
@@ -129,8 +133,8 @@ display_2:
 	and al,0fh
 	jmp display_this
 display_3:
-	mov al,min
-	and al,0fh
+	mov al,hour
+	and al,0f0h
 	mov cl,4
 	shr al,cl
 	jmp display_this
@@ -195,7 +199,7 @@ display proc
 	push dx
 	push ax
 	push bx
-	push cx
+	push chx
 	;转移
 	mov bl,al
 	mov bh,ah
@@ -297,9 +301,14 @@ scankey proc
 	jnz key_pressed
 	;没有键按下
 
-	cmp al,0eeh;1被按下
-	inc flag_stop;每次按下加一，用第0位来判断是否开始计时(1代表停止计时)
+key_pressed:
+	cmp al,77h
+	je exit
 
+	cmp al,0eeh;1被按下
+	jne scan_end
+	inc flag_stop;每次按下加一，用第0位来判断是否开始计时(1代表停止计时)
+scan_end:
 	pop dx
 	pop bx
 	pop ax
